@@ -62,5 +62,206 @@
  *   // => { isValid: false, errors: { name: "...", email: "...", ... } }
  */
 export function validateForm(formData) {
-  // Your code here
+  // Errors object
+  const errors = {};
+
+  /*
+    1. NAME VALIDATION
+  */
+
+  const name = formData?.name;
+
+  if (
+    typeof name !== "string" ||
+    name.trim().length < 2 ||
+    name.trim().length > 50
+  ) {
+    errors.name =
+      "Name must be 2-50 characters";
+  }
+
+  /*
+    2. EMAIL VALIDATION
+  */
+
+  const email = formData?.email;
+
+  if (typeof email !== "string") {
+
+    errors.email =
+      "Invalid email format";
+
+  } else {
+
+    const atIndex = email.indexOf("@");
+
+    const lastAtIndex =
+      email.lastIndexOf("@");
+
+    const dotIndex =
+      email.indexOf(".", atIndex);
+
+    // Exactly one @
+    const oneAt =
+      atIndex !== -1 &&
+      atIndex === lastAtIndex;
+
+    // Dot after @
+    const hasDotAfterAt =
+      dotIndex > atIndex;
+
+    if (!oneAt || !hasDotAfterAt) {
+
+      errors.email =
+        "Invalid email format";
+    }
+  }
+
+  /*
+    3. PHONE VALIDATION
+  */
+
+  const phone = formData?.phone;
+
+  let validPhone = true;
+
+  if (
+    typeof phone !== "string" ||
+    phone.length !== 10
+  ) {
+
+    validPhone = false;
+
+  } else {
+
+    // First digit check
+    if (
+      !["6", "7", "8", "9"]
+        .includes(phone[0])
+    ) {
+
+      validPhone = false;
+    }
+
+    // Check every char digit
+    for (const char of phone) {
+
+      if (
+        char < "0" ||
+        char > "9"
+      ) {
+
+        validPhone = false;
+        break;
+      }
+    }
+  }
+
+  if (!validPhone) {
+
+    errors.phone =
+      "Invalid Indian phone number";
+  }
+
+  /*
+    4. AGE VALIDATION
+  */
+
+  let age = formData?.age;
+
+  // Convert string number
+  if (typeof age === "string") {
+
+    age = parseInt(age);
+  }
+
+  if (
+    isNaN(age) ||
+    !Number.isInteger(age) ||
+    age < 16 ||
+    age > 100
+  ) {
+
+    errors.age =
+      "Age must be an integer between 16 and 100";
+  }
+
+  /*
+    5. PINCODE VALIDATION
+  */
+
+  const pincode =
+    formData?.pincode;
+
+  let validPincode = true;
+
+  if (
+    typeof pincode !== "string" ||
+    pincode.length !== 6 ||
+    pincode.startsWith("0")
+  ) {
+
+    validPincode = false;
+
+  } else {
+
+    // Digit check
+    for (const char of pincode) {
+
+      if (
+        char < "0" ||
+        char > "9"
+      ) {
+
+        validPincode = false;
+        break;
+      }
+    }
+  }
+
+  if (!validPincode) {
+
+    errors.pincode =
+      "Invalid Indian pincode";
+  }
+
+  /*
+    6. STATE VALIDATION
+  */
+
+  const state =
+    formData?.state ?? "";
+
+  if (
+    typeof state !== "string" ||
+    state.trim() === ""
+  ) {
+
+    errors.state =
+      "State is required";
+  }
+
+  /*
+    7. TERMS VALIDATION
+  */
+
+  if (
+    Boolean(formData?.agreeTerms)
+    !== true
+  ) {
+
+    errors.agreeTerms =
+      "Must agree to terms";
+  }
+
+  /*
+    FINAL RESULT
+  */
+
+  return {
+    isValid:
+      Object.keys(errors).length === 0,
+
+    errors
+  };
 }

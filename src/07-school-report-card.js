@@ -41,5 +41,122 @@
  *   // => { name: "Priya", totalMarks: 63, percentage: 31.5, grade: "F", ... }
  */
 export function generateReportCard(student) {
-  // Your code here
+  if (
+    typeof student !== "object" ||
+    student === null
+  ) {
+    return null;
+  }
+
+  if (
+    typeof student.name !== "string" ||
+    student.name.trim() === ""
+  ) {
+    return null;
+  }
+
+  if (
+    typeof student.marks !== "object" ||
+    student.marks === null
+  ) {
+    return null;
+  }
+
+  const entries = Object.entries(student.marks);
+
+  if (entries.length === 0) {
+    return null;
+  }
+
+  const allMarksValid = entries.every(([subject, mark]) =>
+
+    typeof mark === "number" &&
+    Number.isFinite(mark) &&
+    mark >= 0 &&
+    mark <= 100
+
+  );
+
+  if (!allMarksValid) {
+    return null;
+  }
+
+  const marksArray = Object.values(student.marks);
+
+  const totalMarks = marksArray.reduce(
+    (sum, mark) => sum + mark,
+    0
+  );
+
+  const subjectCount = Object.keys(student.marks).length;
+
+  const percentage = parseFloat(
+    (
+      (totalMarks / (subjectCount * 100)) * 100
+    ).toFixed(2)
+  );
+
+  let grade;
+
+  if (percentage >= 90) {
+    grade = "A+";
+  }
+
+  else if (percentage >= 80) {
+    grade = "A";
+  }
+
+  else if (percentage >= 70) {
+    grade = "B";
+  }
+
+  else if (percentage >= 60) {
+    grade = "C";
+  }
+
+  else if (percentage >= 40) {
+    grade = "D";
+  }
+
+  else {
+    grade = "F";
+  }
+
+  const highestSubject = entries.reduce(
+    (highest, current) =>
+
+      current[1] > highest[1]
+        ? current
+        : highest
+
+  )[0];
+
+  const lowestSubject = entries.reduce(
+    (lowest, current) =>
+
+      current[1] < lowest[1]
+        ? current
+        : lowest
+
+  )[0];
+
+  const passedSubjects = entries
+    .filter(([subject, mark]) => mark >= 40)
+    .map(([subject]) => subject);
+
+  const failedSubjects = entries
+    .filter(([subject, mark]) => mark < 40)
+    .map(([subject]) => subject);
+
+  return {
+    name: student.name,
+    totalMarks,
+    percentage,
+    grade,
+    highestSubject,
+    lowestSubject,
+    passedSubjects,
+    failedSubjects,
+    subjectCount
+  };
 }
